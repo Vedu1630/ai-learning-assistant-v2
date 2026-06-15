@@ -1,6 +1,6 @@
 const API = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://127.0.0.1:8000"
-    : "https://ai-learning-3-0i1g.onrender.com";
+    : "https://ai-learning-3-0.onrender.com";
 let kbReady = false;
 
 // ==========================
