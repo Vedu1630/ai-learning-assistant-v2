@@ -1,5 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 import uuid
 
@@ -13,9 +13,7 @@ def create_vector_store(text):
 
     docs = splitter.create_documents([text])
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2"
-    )
+    embeddings = FastEmbedEmbeddings()
 
     collection_name = f"learning_{uuid.uuid4().hex}"
 
@@ -33,17 +31,12 @@ def create_vector_store(text):
     ) as f:
         f.write(collection_name)
 
-    print(f"Created {len(docs)} chunks")
-    print(f"Collection: {collection_name}")
-
     return db
 
 
 def load_vector_store():
 
-    embeddings = HuggingFaceEmbeddings(
-        model_name="all-MiniLM-L6-v2"
-    )
+    embeddings = FastEmbedEmbeddings()
 
     with open(
         "data/current_collection.txt",
