@@ -7,16 +7,20 @@ from llm.groq_client import (
 
 def qa_agent(state):
 
-    db = load_vector_store()
+    try:
+        db = load_vector_store()
 
-    results = db.similarity_search_with_score(
-        state["query"],
-        k=3
-    )
+        results = db.similarity_search_with_score(
+            state["query"],
+            k=3
+        )
 
-    best_score = results[0][1]
+        best_score = results[0][1]
 
-    print("\nBEST SCORE:", best_score)
+        print("\nBEST SCORE:", best_score)
+    except Exception as e:
+        print("Vector store not ready or failed to load. Falling back to general LLM. Error:", str(e))
+        best_score = 999.0
 
     # If similarity is poor → use general LLM
     if best_score > 1.2:

@@ -139,11 +139,6 @@ async function initializeKB() {
 // Chat
 // ==========================
 async function sendMessage() {
-    if(!kbReady) {
-        showStatus("⚠ Please initialize the knowledge base first.");
-        return;
-    }
-    
     const input = document.getElementById("questionInput");
     const query = input.value.trim();
     
@@ -152,6 +147,10 @@ async function sendMessage() {
     addUserMessage(query);
     input.value = "";
     showThinking();
+    
+    if(!kbReady) {
+        showStatus("ℹ Using general knowledge (knowledge base not initialized).");
+    }
     
     try {
         const response = await fetch(

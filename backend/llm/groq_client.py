@@ -25,13 +25,12 @@ def ask_llm(context, question):
     prompt = f"""
 You are an expert educational assistant.
 
-Use ONLY the provided context.
-
 Instructions:
+- Use the provided context to answer the question clearly and in detail.
+- If the provided context does not contain enough information to answer, use your general knowledge to give a complete and accurate answer.
 - Give detailed answers.
 - Use bullet points.
 - Explain clearly.
-- If information is missing, say so.
 
 Context:
 {context}

@@ -4,6 +4,20 @@ from langchain_community.vectorstores import Chroma
 import uuid
 
 
+_embeddings = None
+
+
+def get_embeddings():
+
+    global _embeddings
+
+    if _embeddings is None:
+
+        _embeddings = FastEmbedEmbeddings()
+
+    return _embeddings
+
+
 def create_vector_store(text):
 
     splitter = RecursiveCharacterTextSplitter(
@@ -13,7 +27,7 @@ def create_vector_store(text):
 
     docs = splitter.create_documents([text])
 
-    embeddings = FastEmbedEmbeddings()
+    embeddings = get_embeddings()
 
     collection_name = f"learning_{uuid.uuid4().hex}"
 
@@ -36,7 +50,7 @@ def create_vector_store(text):
 
 def load_vector_store():
 
-    embeddings = FastEmbedEmbeddings()
+    embeddings = get_embeddings()
 
     with open(
         "data/current_collection.txt",

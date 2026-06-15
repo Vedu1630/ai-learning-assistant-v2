@@ -155,15 +155,6 @@ async def chat(
 
     try:
 
-        if not os.path.exists(
-            "data/document.txt"
-        ):
-
-            return {
-                "error":
-                "Please process content first."
-            }
-
         state = {
             "query": data.query,
             "task": "",
