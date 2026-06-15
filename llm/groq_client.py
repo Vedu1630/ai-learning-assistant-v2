@@ -3,7 +3,14 @@ import os
 from groq import Groq
 from dotenv import load_dotenv
 
+# Try loading from current working directory
 load_dotenv()
+
+# Fallback search paths for the .env file
+if not os.getenv("GROQ_API_KEY"):
+    load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", ".env"))
+if not os.getenv("GROQ_API_KEY"):
+    load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", "backend", ".env"))
 
 client = Groq(
     api_key=os.getenv("GROQ_API_KEY")

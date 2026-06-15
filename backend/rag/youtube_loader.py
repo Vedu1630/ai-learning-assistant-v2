@@ -19,11 +19,6 @@ def load_youtube(url):
 
     transcript = api.fetch(video_id)
 
-    print("\nFIRST 10 TRANSCRIPT CHUNKS:\n")
-
-    for item in transcript[:10]:
-        print(item.text)
-
     text = " ".join(
         [item.text for item in transcript]
     )
