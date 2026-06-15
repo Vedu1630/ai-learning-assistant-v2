@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>AI Learning Assistant</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+```
+
+</head>
+
+<body>
+
+```
+<div class="container">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <h2>📚 Knowledge Base</h2>
+
+        <input
+            type="file"
+            id="pdfFile"
+            accept=".pdf"
+        >
+
+        <input
+            type="text"
+            id="youtubeUrl"
+            placeholder="Paste YouTube URL"
+        >
+
+        <button onclick="initializeKB()">
+            🚀 Initialize
+        </button>
+
+        <button onclick="deletePDF()" class="delete-btn">
+            🗑 Delete PDF
+        </button>
+
+        <div id="statusBox">
+
+            Upload a PDF or YouTube video
+            and initialize your knowledge base.
+
+        </div>
+
+    </aside>
+
+    <!-- Main -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <div class="header">
+
+            <div class="header-top">
+
+                <div>
+
+                    <h1>
+                        🤖 AI Learning Assistant
+                    </h1>
+
+                    <p>
+                        Learn smarter with AI-powered notes,
+                        summaries, quizzes and chat.
+                    </p>
+
+                </div>
+
+                <button
+                    id="themeToggle"
+                    onclick="toggleTheme()"
+                >
+                    🌙 Dark Mode
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Tabs -->
+
+        <div class="tabs">
+
+            <button onclick="setMode('chat')">
+                💬 Chat
+            </button>
+
+            <button onclick="generateNotes()">
+                📝 Notes
+            </button>
+
+            <button onclick="generateSummary()">
+                📖 Summary
+            </button>
+
+            <button onclick="generateQuiz()">
+                ❓ Quiz
+            </button>
+
+        </div>
+
+        <!-- Actions -->
+
+        <div class="actions">
+
+            <button onclick="downloadChat()">
+                ⬇ Download Chat
+            </button>
+
+            <button onclick="clearChat()">
+                🗑 Clear Chat
+            </button>
+
+        </div>
+
+        <!-- Chat Area -->
+
+        <div id="chatBox">
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🤖
+                </div>
+
+                <h2>
+                    Welcome
+                </h2>
+
+                <p>
+                    Upload a PDF or YouTube video and initialize your knowledge base.
+                </p>
+
+                <p>
+                    Then start asking questions,
+                    generating notes, summaries,
+                    and quizzes.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Input Area -->
+
+        <div class="inputArea">
+
+            <input
+                type="text"
+                id="questionInput"
+                placeholder="Ask anything about your content..."
+            >
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+```
+
+</body>
+
+</html>
