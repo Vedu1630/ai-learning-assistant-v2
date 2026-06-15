@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+groq
+langchain
+langchain-community
+faiss-cpu
+python-multipart
+python-dotenv
+youtube-transcript-api
+pypdf
