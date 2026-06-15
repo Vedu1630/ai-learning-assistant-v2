@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8000";
+const API = "https://ai-learning-3-0i1g.onrender.com/";
 let kbReady = false;
 
 // ==========================
