@@ -125,8 +125,6 @@ async function initializeKB() {
             Start chatting with your content.
         `);
         
-        document.getElementById("chatBox").innerHTML = "";
-        
         addBotMessage("✅ Knowledge Base Initialized Successfully!\n\nAsk me anything about your content.");
         
     } catch(error) {
