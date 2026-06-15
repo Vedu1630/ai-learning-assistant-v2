@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -9,6 +10,11 @@ from rag.youtube_loader import load_youtube
 from rag.vector_store import create_vector_store
 
 from graph.learning_graph import learning_graph
+
+from agents.qa_agent import qa_agent_stream
+from agents.notes_agent import notes_agent_stream
+from agents.summary_agent import summary_agent_stream
+from agents.quiz_agent import quiz_agent_stream
 
 
 # =====================================
@@ -144,6 +150,17 @@ async def process_content(
         }
 
 
+def get_task_type(query: str) -> str:
+    query_lower = query.lower()
+    if "quiz" in query_lower:
+        return "quiz"
+    elif "notes" in query_lower:
+        return "notes"
+    elif "summary" in query_lower:
+        return "summary"
+    return "qa"
+
+
 # =====================================
 # Chat Endpoint
 # =====================================
@@ -155,26 +172,23 @@ async def chat(
 
     try:
 
-        state = {
-            "query": data.query,
-            "task": "",
-            "result": ""
-        }
+        task = get_task_type(data.query)
 
-        result = learning_graph.invoke(
-            state
-        )
+        if task == "quiz":
+            generator = quiz_agent_stream()
+        elif task == "notes":
+            generator = notes_agent_stream()
+        elif task == "summary":
+            generator = summary_agent_stream()
+        else:
+            generator = qa_agent_stream(data.query)
 
-        return {
-            "answer":
-            result["result"]
-        }
+        return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
 
         return {
-            "error":
-            str(e)
+            "error": str(e)
         }
 
 
@@ -187,26 +201,14 @@ async def notes():
 
     try:
 
-        state = {
-            "query": "create notes",
-            "task": "",
-            "result": ""
-        }
+        generator = notes_agent_stream()
 
-        result = learning_graph.invoke(
-            state
-        )
-
-        return {
-            "notes":
-            result["result"]
-        }
+        return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
 
         return {
-            "error":
-            str(e)
+            "error": str(e)
         }
 
 
@@ -219,26 +221,14 @@ async def summary():
 
     try:
 
-        state = {
-            "query": "create summary",
-            "task": "",
-            "result": ""
-        }
+        generator = summary_agent_stream()
 
-        result = learning_graph.invoke(
-            state
-        )
-
-        return {
-            "summary":
-            result["result"]
-        }
+        return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
 
         return {
-            "error":
-            str(e)
+            "error": str(e)
         }
 
 
@@ -251,26 +241,14 @@ async def quiz():
 
     try:
 
-        state = {
-            "query": "generate quiz",
-            "task": "",
-            "result": ""
-        }
+        generator = quiz_agent_stream()
 
-        result = learning_graph.invoke(
-            state
-        )
-
-        return {
-            "quiz":
-            result["result"]
-        }
+        return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
 
         return {
-            "error":
-            str(e)
+            "error": str(e)
         }
     
 @app.delete("/delete")

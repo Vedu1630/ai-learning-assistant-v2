@@ -70,3 +70,23 @@ def ask_general_llm(question):
     )
 
     return response.choices[0].message.content
+
+
+def ask_llm_stream(prompt, model="llama-3.1-8b-instant", temperature=0.3, max_tokens=1500):
+
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=temperature,
+        max_tokens=max_tokens,
+        stream=True
+    )
+
+    for chunk in response:
+        if chunk.choices and chunk.choices[0].delta.content:
+            yield chunk.choices[0].delta.content

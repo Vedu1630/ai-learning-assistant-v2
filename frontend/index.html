@@ -4,26 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Learning Assistant</title>
+    
+    <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
+        <!-- Sidebar (Left): Knowledge Base & Settings -->
         <aside class="sidebar">
-            <h2>📚 Knowledge Base</h2>
-            <input type="file" id="pdfFile" accept=".pdf">
-            <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL">
-            <button onclick="initializeKB()">🚀 Initialize</button>
-            <button onclick="deletePDF()" class="delete-btn">🗑 Delete PDF</button>
-            <div id="statusBox">
-                Upload a PDF or YouTube video and initialize your knowledge base.
+            <div class="sidebar-header">
+                <h2>📚 Knowledge Base</h2>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- Premium Drag & Drop Area -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📤</div>
+                    <p class="upload-text">Drag & drop PDF here</p>
+                    <p class="upload-subtext">or click to browse</p>
+                    <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+                </div>
+                
+                <div id="fileInfo" class="file-info" style="display: none;">
+                    <span class="file-icon">📄</span>
+                    <span id="fileName" class="file-name">None selected</span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="youtubeUrl">🎬 YouTube Video Link</label>
+                    <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL">
+                </div>
+                
+                <button onclick="initializeKB()" class="primary-btn">🚀 Initialize KB</button>
+                <button onclick="deletePDF()" class="delete-btn">🗑 Delete PDF</button>
+                
+                <div id="statusBox">
+                    Upload a PDF or YouTube video and initialize your knowledge base.
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button id="themeToggle" onclick="toggleTheme()" class="secondary-btn">🌙 Dark Mode</button>
             </div>
         </aside>
 
-        <!-- Main -->
+        <!-- Main Dashboard Panel -->
         <main class="main">
             <!-- Header -->
             <div class="header">
@@ -32,41 +61,67 @@
                         <h1>🤖 AI Learning Assistant</h1>
                         <p>Learn smarter with AI-powered notes, summaries, quizzes and chat.</p>
                     </div>
-                    <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="tabs">
-                <button onclick="setMode('chat')">💬 Chat</button>
-                <button onclick="generateNotes()">📝 Notes</button>
-                <button onclick="generateSummary()">📖 Summary</button>
-                <button onclick="generateQuiz()">❓ Quiz</button>
-            </div>
-
-            <!-- Actions -->
-            <div class="actions">
-                <button onclick="downloadChat()">⬇ Download Chat</button>
-                <button onclick="clearChat()">🗑 Clear Chat</button>
-            </div>
-
-            <!-- Chat Area -->
-            <div id="chatBox">
-                <div class="empty-state">
-                    <div class="empty-icon">🤖</div>
-                    <h2>Welcome</h2>
-                    <p>Upload a PDF or YouTube video and initialize your knowledge base.</p>
-                    <p>Then start asking questions, generating notes, summaries, and quizzes.</p>
+            <!-- Split Panel Area -->
+            <div class="dashboard-body">
+                <!-- Reader Panel (Left): Note/Summary/Quiz Canvas -->
+                <div class="reader-panel">
+                    <div class="panel-header">
+                        <div class="tabs">
+                            <button onclick="generateNotes()" class="tab-btn">📝 Notes</button>
+                            <button onclick="generateSummary()" class="tab-btn">📖 Summary</button>
+                            <button onclick="generateQuiz()" class="tab-btn">❓ Quiz</button>
+                        </div>
+                        <div class="canvas-actions">
+                            <button onclick="downloadCanvasContent()" class="canvas-action-btn" title="Download generated material">⬇ Download</button>
+                            <button onclick="clearCanvas()" class="canvas-action-btn" title="Clear canvas">🗑 Clear</button>
+                        </div>
+                    </div>
+                    
+                    <div id="readerCanvas" class="reader-canvas">
+                        <div class="empty-canvas-state">
+                            <div class="canvas-icon">📖</div>
+                            <h3>Study Canvas Empty</h3>
+                            <p>Select a tab above to generate study notes, summaries, or quizzes from your knowledge base.</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Input Area -->
-            <div class="inputArea">
-                <input type="text" id="questionInput" placeholder="Ask anything about your content...">
-                <button onclick="sendMessage()">Send</button>
+                <!-- Chat Sidebar (Right): Collapsible QA Chatbot -->
+                <div id="chatSidebar" class="chat-sidebar">
+                    <div class="sidebar-header-bar">
+                        <h3>💬 Study Chat</h3>
+                        <div class="chat-actions">
+                            <button onclick="downloadChat()" class="chat-action-btn" title="Download Chat">⬇</button>
+                            <button onclick="clearChat()" class="chat-action-btn" title="Clear Chat">🗑</button>
+                            <button onclick="toggleChatSidebar()" class="collapse-btn" title="Collapse Chat">➡️</button>
+                        </div>
+                    </div>
+                    
+                    <div id="chatBox">
+                        <div class="empty-state">
+                            <div class="empty-icon">🤖</div>
+                            <h2>Study Chat</h2>
+                            <p>Ask anything about your content or general topics here.</p>
+                        </div>
+                    </div>
+
+                    <div class="inputArea">
+                        <input type="text" id="questionInput" placeholder="Ask anything about your content...">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
+
+    <!-- Floating Chat Trigger Button (shown when sidebar is collapsed) -->
+    <button id="floatingChatBtn" onclick="toggleChatSidebar()" class="floating-chat-btn" style="display: none;">
+        💬 Chat
+    </button>
+
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
-from llm.groq_client import client
-
+from llm.groq_client import (
+    client,
+    ask_llm_stream
+)
 
 def summary_agent(state):
 
@@ -47,3 +49,35 @@ Document:
     )
 
     return state
+
+
+def summary_agent_stream():
+
+    with open(
+        "data/document.txt",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        document = f.read()[:12000]
+
+    prompt = f"""
+You are an expert educator.
+
+Create a detailed summary
+of the document.
+
+Include:
+
+- Main Topic
+- Key Ideas
+- Important Events
+- Important Concepts
+- Final Conclusion
+
+Document:
+
+{document}
+"""
+
+    return ask_llm_stream(prompt)

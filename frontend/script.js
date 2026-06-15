@@ -13,13 +13,15 @@ function showStatus(message) {
 // ==========================
 // Auto Scroll
 // ==========================
-function scrollToBottom() {
-    const chatBox = document.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
+function scrollToBottom(containerId) {
+    const el = document.getElementById(containerId);
+    if(el) {
+        el.scrollTop = el.scrollHeight;
+    }
 }
 
 // ==========================
-// Save Chat
+// Save Chat & Canvas
 // ==========================
 function saveChat() {
     localStorage.setItem(
@@ -28,11 +30,24 @@ function saveChat() {
     );
 }
 
+function saveCanvas() {
+    localStorage.setItem(
+        "canvasHistory",
+        document.getElementById("readerCanvas").innerHTML
+    );
+}
+
 // ==========================
-// User Message
+// Add Messages
 // ==========================
 function addUserMessage(text) {
     const chatBox = document.getElementById("chatBox");
+    
+    // Remove empty state
+    const emptyState = chatBox.querySelector(".empty-state");
+    if(emptyState) {
+        chatBox.innerHTML = "";
+    }
     
     chatBox.innerHTML += `
         <div class="user-message">
@@ -40,24 +55,23 @@ function addUserMessage(text) {
         </div>
     `;
     
-    scrollToBottom();
+    scrollToBottom("chatBox");
     saveChat();
 }
 
-// ==========================
-// Bot Message
-// ==========================
-function addBotMessage(text) {
+function createBotMessageContainer() {
     const chatBox = document.getElementById("chatBox");
     
-    chatBox.innerHTML += `
-        <div class="bot-message">
-            ${text}
-        </div>
-    `;
+    // Remove empty state
+    const emptyState = chatBox.querySelector(".empty-state");
+    if(emptyState) {
+        chatBox.innerHTML = "";
+    }
     
-    scrollToBottom();
-    saveChat();
+    const div = document.createElement("div");
+    div.className = "bot-message";
+    chatBox.appendChild(div);
+    return div;
 }
 
 // ==========================
@@ -77,7 +91,7 @@ function showThinking() {
     `;
     
     chatBox.appendChild(div);
-    scrollToBottom();
+    scrollToBottom("chatBox");
 }
 
 function removeThinking() {
@@ -86,6 +100,88 @@ function removeThinking() {
         bubble.remove();
     }
 }
+
+// ==========================
+// Sidebar Collapse Toggle
+// ==========================
+function toggleChatSidebar() {
+    const sidebar = document.getElementById("chatSidebar");
+    const floatBtn = document.getElementById("floatingChatBtn");
+    
+    if (sidebar.classList.contains("collapsed")) {
+        sidebar.classList.remove("collapsed");
+        floatBtn.style.display = "none";
+    } else {
+        sidebar.classList.add("collapsed");
+        floatBtn.style.display = "flex";
+    }
+}
+
+// ==========================
+// Drag and Drop Uploader
+// ==========================
+document.addEventListener("DOMContentLoaded", () => {
+    const uploadZone = document.getElementById("uploadZone");
+    const fileInput = document.getElementById("pdfFile");
+    const fileName = document.getElementById("fileName");
+    const fileInfo = document.getElementById("fileInfo");
+    const input = document.getElementById("questionInput");
+    
+    if (uploadZone && fileInput) {
+        uploadZone.addEventListener("click", () => fileInput.click());
+        
+        uploadZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            uploadZone.classList.add("dragover");
+        });
+        
+        uploadZone.addEventListener("dragleave", () => {
+            uploadZone.classList.remove("dragover");
+        });
+        
+        uploadZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove("dragover");
+            if(e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                updateFileDetails();
+            }
+        });
+        
+        fileInput.addEventListener("change", updateFileDetails);
+    }
+    
+    function updateFileDetails() {
+        if(fileInput.files && fileInput.files[0]) {
+            fileName.textContent = fileInput.files[0].name;
+            fileInfo.style.display = "flex";
+        }
+    }
+
+    input.addEventListener("keypress", function(e) {
+        if(e.key === "Enter") {
+            sendMessage();
+        }
+    });
+    
+    // Restore Theme
+    if(localStorage.getItem("darkMode") === "true") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("themeToggle").innerHTML = "☀️ Light Mode";
+    }
+    
+    // Restore Chat & Canvas
+    const savedChat = localStorage.getItem("chatHistory");
+    if(savedChat) {
+        document.getElementById("chatBox").innerHTML = savedChat;
+        scrollToBottom("chatBox");
+    }
+    
+    const savedCanvas = localStorage.getItem("canvasHistory");
+    if(savedCanvas) {
+        document.getElementById("readerCanvas").innerHTML = savedCanvas;
+    }
+});
 
 // ==========================
 // Initialize Knowledge Base
@@ -134,7 +230,29 @@ async function initializeKB() {
 }
 
 // ==========================
-// Chat
+// Streaming Handler
+// ==========================
+async function readResponseStream(response, outputElement, onChunkReceived) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    
+    while(true) {
+        const { value, done } = await reader.read();
+        if(done) break;
+        
+        const chunk = decoder.decode(value, { stream: true });
+        text += chunk;
+        if(onChunkReceived) {
+            onChunkReceived(text);
+        } else {
+            outputElement.innerHTML = text;
+        }
+    }
+}
+
+// ==========================
+// Q&A Send Message
 // ==========================
 async function sendMessage() {
     const input = document.getElementById("questionInput");
@@ -162,88 +280,103 @@ async function sendMessage() {
             }
         );
         
-        const data = await response.json();
         removeThinking();
         
-        addBotMessage(
-            data.answer || 
-            data.error || 
-            "No response received."
-        );
+        const messageContainer = createBotMessageContainer();
+        
+        await readResponseStream(response, messageContainer, (currentText) => {
+            messageContainer.textContent = currentText;
+            scrollToBottom("chatBox");
+        });
+        
+        saveChat();
         
     } catch(error) {
+        console.error(error);
         removeThinking();
         addBotMessage("❌ Error connecting to backend.");
     }
 }
 
 // ==========================
-// Notes
+// Reading Canvas Builders
 // ==========================
-async function generateNotes() {
+function prepareCanvas() {
+    const canvas = document.getElementById("readerCanvas");
+    canvas.innerHTML = `
+        <div class="canvas-loading">
+            <div class="loading-spinner"></div>
+            <span>Generating content...</span>
+        </div>
+    `;
+    return canvas;
+}
+
+async function generateStudyMaterial(endpoint, title) {
     if(!kbReady) {
         showStatus("⚠ Initialize knowledge base first.");
         return;
     }
     
-    showThinking();
+    const canvas = prepareCanvas();
     
     try {
-        const response = await fetch(`${API}/notes`, { method: "POST" });
-        const data = await response.json();
+        const response = await fetch(`${API}/${endpoint}`, { method: "POST" });
         
-        removeThinking();
-        addBotMessage(data.notes || data.error);
-    } catch {
-        removeThinking();
-        addBotMessage("❌ Failed to generate notes.");
+        // Remove loading state
+        canvas.innerHTML = `<div class="canvas-text"></div>`;
+        const textContainer = canvas.querySelector(".canvas-text");
+        
+        await readResponseStream(response, textContainer, (currentText) => {
+            textContainer.textContent = currentText;
+            scrollToBottom("readerCanvas");
+        });
+        
+        saveCanvas();
+    } catch(error) {
+        console.error(error);
+        canvas.innerHTML = `
+            <div class="canvas-error">
+                <span>❌ Failed to generate ${title}.</span>
+            </div>
+        `;
     }
 }
 
-// ==========================
-// Summary
-// ==========================
-async function generateSummary() {
-    if(!kbReady) {
-        showStatus("⚠ Initialize knowledge base first.");
-        return;
-    }
-    
-    showThinking();
-    
-    try {
-        const response = await fetch(`${API}/summary`, { method: "POST" });
-        const data = await response.json();
-        
-        removeThinking();
-        addBotMessage(data.summary || data.error);
-    } catch {
-        removeThinking();
-        addBotMessage("❌ Failed to generate summary.");
-    }
+function generateNotes() {
+    generateStudyMaterial("notes", "study notes");
+}
+
+function generateSummary() {
+    generateStudyMaterial("summary", "executive summary");
+}
+
+function generateQuiz() {
+    generateStudyMaterial("quiz", "study quiz");
 }
 
 // ==========================
-// Quiz
+// Canvas Actions
 // ==========================
-async function generateQuiz() {
-    if(!kbReady) {
-        showStatus("⚠ Initialize knowledge base first.");
-        return;
-    }
+function clearCanvas() {
+    document.getElementById("readerCanvas").innerHTML = `
+        <div class="empty-canvas-state">
+            <div class="canvas-icon">📖</div>
+            <h3>Study Canvas Empty</h3>
+            <p>Select a tab above to generate study notes, summaries, or quizzes from your knowledge base.</p>
+        </div>
+    `;
+    localStorage.removeItem("canvasHistory");
+}
+
+function downloadCanvasContent() {
+    const text = document.getElementById("readerCanvas").innerText;
+    const blob = new Blob([text], {type: "text/plain"});
+    const a = document.createElement("a");
     
-    showThinking();
-    
-    try {
-        const response = await fetch(`${API}/quiz`, { method: "POST" });
-        const data = await response.json();
-        
-        removeThinking();
-        addBotMessage(data.quiz || data.error);
-    } catch {
-        removeThinking();
-        addBotMessage("❌ Failed to generate quiz.");
-    }
+    a.href = URL.createObjectURL(blob);
+    a.download = "study_material.txt";
+    a.click();
 }
 
 // ==========================
@@ -279,50 +412,12 @@ function clearChat() {
     document.getElementById("chatBox").innerHTML = `
         <div class="empty-state">
             <div class="empty-icon">🤖</div>
-            <h2>Chat Cleared</h2>
-            <p>Start a new conversation.</p>
+            <h2>Study Chat</h2>
+            <p>Ask anything about your content or general topics here.</p>
         </div>
     `;
     localStorage.removeItem("chatHistory");
 }
-
-// ==========================
-// Tab Mode Selector
-// ==========================
-function setMode(mode) {
-    if(mode === "chat") {
-        const input = document.getElementById("questionInput");
-        if(input) {
-            input.focus();
-        }
-    }
-}
-
-// ==========================
-// Page Load
-// ==========================
-document.addEventListener("DOMContentLoaded", () => {
-    const input = document.getElementById("questionInput");
-    
-    input.addEventListener("keypress", function(e) {
-        if(e.key === "Enter") {
-            sendMessage();
-        }
-    });
-    
-    // Restore Theme
-    if(localStorage.getItem("darkMode") === "true") {
-        document.body.classList.add("dark-mode");
-        document.getElementById("themeToggle").innerHTML = "☀️ Light Mode";
-    }
-    
-    // Restore Chat
-    const savedChat = localStorage.getItem("chatHistory");
-    if(savedChat) {
-        document.getElementById("chatBox").innerHTML = savedChat;
-        scrollToBottom();
-    }
-});
 
 // ==========================
 // Delete PDF
@@ -339,6 +434,7 @@ async function deletePDF() {
         const data = await response.json();
 
         document.getElementById("pdfFile").value = "";
+        document.getElementById("fileInfo").style.display = "none";
         kbReady = false;
 
         showStatus("🗑 PDF deleted successfully.");
