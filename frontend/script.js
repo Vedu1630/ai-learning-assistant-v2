@@ -74,6 +74,53 @@ function createBotMessageContainer() {
     return div;
 }
 
+function addBotMessage(text) {
+    const container = createBotMessageContainer();
+    if (window.marked && window.marked.parse) {
+        container.innerHTML = window.marked.parse(text);
+    } else {
+        container.textContent = text;
+    }
+    scrollToBottom("chatBox");
+    saveChat();
+}
+
+function unescapeJsonString(str) {
+    return str
+        .replace(/\\n/g, '\n')
+        .replace(/\\t/g, '\t')
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, '\\')
+        .replace(/\\r/g, '\r')
+        .replace(/\\b/g, '\b')
+        .replace(/\\f/g, '\f');
+}
+
+function extractContent(text) {
+    let trimmed = text.trim();
+    if (trimmed.startsWith("{")) {
+        try {
+            const parsed = JSON.parse(trimmed);
+            const content = parsed.answer || parsed.notes || parsed.summary || parsed.quiz;
+            if (content !== undefined) {
+                return content;
+            }
+        } catch (e) {
+            const match = trimmed.match(/^\{\s*"(answer|notes|summary|quiz)"\s*:\s*"(.*)/s);
+            if (match) {
+                let inner = match[2];
+                if (inner.endsWith('"}') || inner.endsWith('"} ')) {
+                    inner = inner.substring(0, inner.lastIndexOf('"}'));
+                } else if (inner.endsWith('"')) {
+                    inner = inner.substring(0, inner.length - 1);
+                }
+                return unescapeJsonString(inner);
+            }
+        }
+    }
+    return text;
+}
+
 // ==========================
 // Thinking Animation
 // ==========================
@@ -243,10 +290,17 @@ async function readResponseStream(response, outputElement, onChunkReceived) {
         
         const chunk = decoder.decode(value, { stream: true });
         text += chunk;
+        
+        const displayText = extractContent(text);
+        
         if(onChunkReceived) {
-            onChunkReceived(text);
+            onChunkReceived(displayText);
         } else {
-            outputElement.innerHTML = text;
+            if (window.marked && window.marked.parse) {
+                outputElement.innerHTML = window.marked.parse(displayText);
+            } else {
+                outputElement.textContent = displayText;
+            }
         }
     }
 }
@@ -284,8 +338,12 @@ async function sendMessage() {
         
         const messageContainer = createBotMessageContainer();
         
-        await readResponseStream(response, messageContainer, (currentText) => {
-            messageContainer.textContent = currentText;
+        await readResponseStream(response, messageContainer, (displayText) => {
+            if (window.marked && window.marked.parse) {
+                messageContainer.innerHTML = window.marked.parse(displayText);
+            } else {
+                messageContainer.textContent = displayText;
+            }
             scrollToBottom("chatBox");
         });
         
@@ -328,7 +386,11 @@ async function generateStudyMaterial(endpoint, title) {
         const textContainer = canvas.querySelector(".canvas-text");
         
         await readResponseStream(response, textContainer, (currentText) => {
-            textContainer.textContent = currentText;
+            if (window.marked && window.marked.parse) {
+                textContainer.innerHTML = window.marked.parse(currentText);
+            } else {
+                textContainer.textContent = currentText;
+            }
             scrollToBottom("readerCanvas");
         });
         

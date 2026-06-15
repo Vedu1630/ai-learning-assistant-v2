@@ -402,7 +402,7 @@ body {
 .canvas-text {
   font-size: 16px;
   line-height: 1.8;
-  white-space: pre-wrap;
+  white-space: normal;
   color: var(--text-main);
   animation: fadeIn 0.4s ease;
 }
@@ -585,8 +585,103 @@ body {
   line-height: 1.6;
   font-size: 14px;
   box-shadow: var(--card-shadow);
-  white-space: pre-wrap;
+  white-space: normal;
   animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   MARKDOWN TYPOGRAPHY & FORMATTING Styles for Bot Message & Canvas
+   ========================================================================== */
+.bot-message p, .canvas-text p {
+  margin-bottom: 12px;
+}
+.bot-message p:last-child, .canvas-text p:last-child {
+  margin-bottom: 0;
+}
+
+.bot-message strong, .canvas-text strong {
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.bot-message em, .canvas-text em {
+  font-style: italic;
+}
+
+.bot-message ul, .canvas-text ul {
+  list-style-type: disc;
+  margin-bottom: 12px;
+  padding-left: 20px;
+}
+
+.bot-message ol, .canvas-text ol {
+  list-style-type: decimal;
+  margin-bottom: 12px;
+  padding-left: 20px;
+}
+
+.bot-message li, .canvas-text li {
+  margin-bottom: 6px;
+  line-height: 1.6;
+}
+
+.bot-message li:last-child, .canvas-text li:last-child {
+  margin-bottom: 0;
+}
+
+.bot-message h1, .bot-message h2, .bot-message h3, .bot-message h4,
+.canvas-text h1, .canvas-text h2, .canvas-text h3, .canvas-text h4 {
+  font-family: var(--font-title);
+  color: var(--text-main);
+  font-weight: 700;
+  margin-top: 18px;
+  margin-bottom: 10px;
+}
+
+.bot-message h1, .canvas-text h1 { font-size: 1.6rem; }
+.bot-message h2, .canvas-text h2 { font-size: 1.4rem; }
+.bot-message h3, .canvas-text h3 { font-size: 1.2rem; }
+.bot-message h4, .canvas-text h4 { font-size: 1.1rem; }
+
+.bot-message code, .canvas-text code {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.dark-mode .bot-message code, .dark-mode .canvas-text code {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.bot-message pre, .canvas-text pre {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 12px 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.dark-mode .bot-message pre, .dark-mode .canvas-text pre {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.bot-message pre code, .canvas-text pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: 13.5px;
+}
+
+.bot-message blockquote, .canvas-text blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 14px;
+  margin: 12px 0;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* Input Area (Bottom of Chat) */
