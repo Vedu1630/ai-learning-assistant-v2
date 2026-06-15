@@ -10,8 +10,8 @@ langchain-community
 langchain-core
 langgraph
 
-faiss-cpu
-sentence-transformers
+chromadb
+fastembed
 
 pypdf
 
