@@ -14,6 +14,9 @@
     
     <!-- Markdown Parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- HTML to PDF Exporter -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -27,8 +30,8 @@
                 <!-- Premium Drag & Drop Area -->
                 <div class="upload-zone" id="uploadZone">
                     <div class="upload-icon">📤</div>
-                    <p class="upload-text">Drag & drop PDF here</p>
-                    <p class="upload-subtext">or click to browse</p>
+                    <p class="upload-text">Upload PDF Document</p>
+                    <p class="upload-subtext">Click or drag & drop</p>
                     <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
                 </div>
                 
@@ -42,11 +45,20 @@
                     <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL">
                 </div>
                 
-                <button onclick="initializeKB()" class="primary-btn">🚀 Initialize KB</button>
-                <button onclick="deletePDF()" class="delete-btn">🗑 Delete PDF</button>
+                <button onclick="addToKB()" class="primary-btn">🚀 Add to KB</button>
+                
+                <!-- Document List Registry -->
+                <div class="document-list-container">
+                    <h3>📂 Active Documents</h3>
+                    <div id="documentsList" class="document-list">
+                        <div class="empty-docs-state">No documents added yet.</div>
+                    </div>
+                </div>
+
+                <button onclick="clearAllKB()" class="delete-btn">🗑 Clear Entire KB</button>
                 
                 <div id="statusBox">
-                    Upload a PDF or YouTube video and initialize your knowledge base.
+                    Upload PDFs or YouTube video links to build your Knowledge Base.
                 </div>
             </div>
             
@@ -78,7 +90,8 @@
                             <button onclick="generateQuiz()" class="tab-btn">❓ Quiz</button>
                         </div>
                         <div class="canvas-actions">
-                            <button onclick="downloadCanvasContent()" class="canvas-action-btn" title="Download generated material">⬇ Download</button>
+                            <button onclick="exportCanvasToPDF()" class="canvas-action-btn" title="Export study material as PDF">📄 Export PDF</button>
+                            <button onclick="exportCanvasToMD()" class="canvas-action-btn" title="Download raw Markdown">📝 Download MD</button>
                             <button onclick="clearCanvas()" class="canvas-action-btn" title="Clear canvas">🗑 Clear</button>
                         </div>
                     </div>

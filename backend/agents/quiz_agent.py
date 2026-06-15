@@ -60,31 +60,48 @@ def quiz_agent_stream():
     prompt = f"""
 You are an expert educational assistant.
 
-Use ONLY the provided context.
-
-Instructions:
-- Give detailed answers.
-- Use bullet points.
-- Explain clearly.
+Use ONLY the provided context to generate a study quiz.
 
 Context:
 {context}
 
-Question:
-Generate a study quiz.
+Instructions:
+- You MUST generate exactly:
+  1. 5 Multiple Choice Questions (each must have exactly 4 options)
+  2. 3 True/False Questions
+  3. 2 Short Answer Questions
+- You MUST output the quiz strictly as a JSON array of objects inside a markdown code block starting with ```json and ending with ```.
+- Do NOT output any other text or explanation before or after the JSON block.
 
-Include:
-
-1. 5 Multiple Choice Questions
-   - 4 options each
-   - provide correct answer
-
-2. 3 True/False Questions
-   - provide correct answer
-
-3. 2 Short Answer Questions
-
-Format clearly.
+JSON Structure:
+```json
+[
+  {{
+    "id": 1,
+    "type": "multiple_choice",
+    "question": "Question text?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": "Option A",
+    "explanation": "Brief explanation why Option A is correct."
+  }},
+  {{
+    "id": 6,
+    "type": "true_false",
+    "question": "Statement text?",
+    "options": ["True", "False"],
+    "answer": "True",
+    "explanation": "Brief explanation."
+  }},
+  {{
+    "id": 9,
+    "type": "short_answer",
+    "question": "Question text?",
+    "answer": "Expected key answer points / sample answer.",
+    "explanation": "Grading criteria or context for the answer."
+  }}
+]
+```
+Ensure all JSON syntax is valid, strings are properly escaped, and the response is wrapped inside the ```json block.
 
 Answer:
 """

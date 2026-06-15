@@ -1,3 +1,4 @@
+import os
 from langchain_community.document_loaders import PyPDFLoader
 
 
@@ -7,9 +8,13 @@ def load_pdf(pdf_path):
 
     docs = loader.load()
 
-    text = ""
+    filename = os.path.basename(pdf_path)
 
-    for doc in docs:
-        text += doc.page_content + "\n"
+    for i, doc in enumerate(docs):
+        doc.metadata = {
+            "source_name": filename,
+            "source_type": "pdf",
+            "page": i + 1
+        }
 
-    return text
+    return docs

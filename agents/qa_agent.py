@@ -80,7 +80,20 @@ def qa_agent_stream(query):
 
         print("Using General LLM")
 
-        return ask_llm_stream(query, temperature=0.5, max_tokens=1000)
+        prompt = f"""
+You are an expert educational assistant.
+
+Question: {query}
+
+Instructions:
+- Give detailed answers.
+- Use bullet points.
+- Explain clearly.
+- Do NOT mention page numbers or files since you do not have any document context here.
+- At the very end of your response, after a blank line, you MUST append exactly 3 relevant follow-up question suggestions that the user might want to ask next, enclosed in `[Suggestions: Question 1? | Question 2? | Question 3?]`.
+"""
+
+        return ask_llm_stream(prompt, temperature=0.5, max_tokens=1000)
 
     else:
 
@@ -91,12 +104,27 @@ def qa_agent_stream(query):
             for doc, score in results
         ]
 
-        context = "\n".join(
-            [
-                doc.page_content
-                for doc in docs
-            ]
-        )
+        context_parts = []
+        for doc in docs:
+            meta = doc.metadata
+            source = meta.get("source_name", "Unknown Source")
+            source_type = meta.get("source_type", "pdf")
+            if source_type == "pdf":
+                page_info = f" (Page: {meta.get('page', 1)})"
+            elif source_type == "youtube":
+                secs = meta.get("timestamp", 0)
+                hrs = secs // 3600
+                mins = (secs % 3600) // 60
+                seconds = secs % 60
+                if hrs > 0:
+                    page_info = f" (Time: {hrs:02d}:{mins:02d}:{seconds:02d})"
+                else:
+                    page_info = f" (Time: {mins:02d}:{seconds:02d})"
+            else:
+                page_info = ""
+            context_parts.append(f"Source: {source}{page_info}\nContent: {doc.page_content}")
+        
+        context = "\n\n---\n\n".join(context_parts)
 
         prompt = f"""
 You are an expert educational assistant.
@@ -107,6 +135,8 @@ Instructions:
 - Give detailed answers.
 - Use bullet points.
 - Explain clearly.
+- For every factual claim or detail you explain from the context, you MUST cite the source immediately using the format `[Source: source_name, Page: X]` or `[Source: source_name, Time: HH:MM:SS]`. Do not modify this format.
+- At the very end of your response, after a blank line, you MUST append exactly 3 relevant follow-up question suggestions that the user might want to ask next, enclosed in `[Suggestions: Question 1? | Question 2? | Question 3?]`.
 
 Context:
 {context}
