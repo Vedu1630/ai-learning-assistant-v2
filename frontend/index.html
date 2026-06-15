@@ -24,6 +24,7 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>📚 Knowledge Base</h2>
+                <button onclick="toggleSidebarDrawer()" class="sidebar-close-btn" id="sidebarCloseBtn">✕</button>
             </div>
             
             <div class="sidebar-content">
@@ -72,10 +73,12 @@
             <!-- Header -->
             <div class="header">
                 <div class="header-top">
-                    <div>
+                    <button onclick="toggleSidebarDrawer()" class="mobile-toggle-btn" id="mobileKBBtn" title="Toggle Knowledge Base">☰ Files</button>
+                    <div class="header-title-container">
                         <h1>🤖 AI Learning Assistant</h1>
                         <p>Learn smarter with AI-powered notes, summaries, quizzes and chat.</p>
                     </div>
+                    <button onclick="toggleChatSidebar()" class="mobile-toggle-btn" id="mobileChatBtn" title="Toggle Study Chat">💬 Chat</button>
                 </div>
             </div>
 

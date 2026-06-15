@@ -236,6 +236,36 @@ function removeThinking() {
 // ==========================
 // Sidebar Collapse Toggle
 // ==========================
+function toggleSidebarDrawer() {
+    const sidebar = document.querySelector(".sidebar");
+    sidebar.classList.toggle("open");
+    toggleBackdrop(sidebar.classList.contains("open"));
+}
+
+function toggleBackdrop(show) {
+    let backdrop = document.getElementById("drawerBackdrop");
+    if (!backdrop) {
+        backdrop = document.createElement("div");
+        backdrop.id = "drawerBackdrop";
+        backdrop.className = "drawer-backdrop";
+        backdrop.onclick = () => {
+            document.querySelector(".sidebar").classList.remove("open");
+            document.getElementById("chatSidebar").classList.add("collapsed");
+            const floatBtn = document.getElementById("floatingChatBtn");
+            if (floatBtn) {
+                floatBtn.style.display = "flex";
+            }
+            toggleBackdrop(false);
+        };
+        document.body.appendChild(backdrop);
+    }
+    if (show) {
+        backdrop.classList.add("active");
+    } else {
+        backdrop.classList.remove("active");
+    }
+}
+
 function toggleChatSidebar() {
     const sidebar = document.getElementById("chatSidebar");
     const floatBtn = document.getElementById("floatingChatBtn");
@@ -243,9 +273,13 @@ function toggleChatSidebar() {
     if (sidebar.classList.contains("collapsed")) {
         sidebar.classList.remove("collapsed");
         floatBtn.style.display = "none";
+        if (window.innerWidth <= 768) {
+            toggleBackdrop(true);
+        }
     } else {
         sidebar.classList.add("collapsed");
         floatBtn.style.display = "flex";
+        toggleBackdrop(false);
     }
 }
 
