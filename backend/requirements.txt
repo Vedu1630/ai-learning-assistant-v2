@@ -15,7 +15,7 @@ fastembed
 
 pypdf
 
-youtube-transcript-api
+yt-dlp
 
 requests
 numpy
