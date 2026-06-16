@@ -99,6 +99,59 @@ def home():
     }
 
 
+@app.get("/test-ytdlp")
+def test_ytdlp(youtube_url: str = "https://www.youtube.com/watch?v=7ARBJQn6QkM"):
+    import yt_dlp
+    results = {}
+    
+    clients = [
+        "default",
+        "ios",
+        "android",
+        "web",
+        "web_embedded",
+        "mweb",
+        "tv",
+        "default,-android_vr",
+        "default,-android",
+        "default,-web",
+        "ios,android,web_embedded"
+    ]
+    
+    for client in clients:
+        try:
+            ydl_opts = {
+                'skip_download': True,
+                'writesubtitles': True,
+                'writeautomaticsub': True,
+            }
+            if client != "default":
+                # extractor_args is expected as a dict of lists or dict of strings
+                ydl_opts['extractor_args'] = {
+                    'youtube': {
+                        'player_client': [client] if "," not in client and "-" not in client else (client.split(",") if "," in client else [client])
+                    }
+                }
+            
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(youtube_url, download=False)
+                subtitles = info.get('subtitles', {})
+                automatic_captions = info.get('automatic_captions', {})
+                en_keys = [k for k in list(subtitles.keys()) + list(automatic_captions.keys()) if k.startswith('en')]
+                results[client] = {
+                    "status": "success",
+                    "en_keys": en_keys
+                }
+        except Exception as e:
+            results[client] = {
+                "status": "fail",
+                "error": str(e)
+            }
+            
+    return results
+
+
+
 # =====================================
 # Process PDF / YouTube
 # =====================================
