@@ -114,6 +114,19 @@ def get_error_log():
     return {"message": f"No error log found. Path checked: {log_path}"}
 
 
+@app.get("/test-embed")
+def test_embed():
+    try:
+        from rag.vector_store import get_embeddings
+        emb = get_embeddings()
+        print("Model retrieved, testing embedding query...")
+        res = emb.embed_query("hello world")
+        return {"status": "success", "embedding_len": len(res)}
+    except Exception as e:
+        return {"status": "fail", "error": str(e)}
+
+
+
 @app.get("/test-ytdlp")
 
 def test_ytdlp(youtube_url: str = "https://www.youtube.com/watch?v=7ARBJQn6QkM"):
