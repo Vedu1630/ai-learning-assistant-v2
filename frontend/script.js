@@ -1,11 +1,12 @@
-const API = (
-    window.location.hostname === "localhost" || 
-    window.location.hostname === "127.0.0.1" || 
-    window.location.hostname === "" || 
-    window.location.hostname.startsWith("192.168.") || 
-    window.location.hostname.startsWith("10.") || 
-    window.location.hostname.startsWith("172.")
-)
+const isLocal = (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "" ||
+    window.location.hostname.endsWith(".local") ||
+    window.location.hostname.includes(":") ||
+    /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|127\.)/.test(window.location.hostname)
+);
+const API = isLocal
     ? (window.location.hostname ? `http://${window.location.hostname}:8000` : "http://127.0.0.1:8000")
     : "https://ai-learning-3-0.onrender.com";
 let kbReady = false;

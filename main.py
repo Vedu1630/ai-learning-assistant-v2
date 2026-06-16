@@ -21,6 +21,16 @@ def save_registry(registry):
     with open(registry_path, "w", encoding="utf-8") as f:
         json.dump(registry, f, indent=4, ensure_ascii=False)
 
+def log_exception(exc_type_str):
+    import traceback
+    try:
+        with open("data/error.log", "a", encoding="utf-8") as f:
+            f.write(f"=== Error in {exc_type_str} ===\n")
+            traceback.print_exc(file=f)
+            f.write("\n")
+    except Exception:
+        pass
+
 from rag.pdf_loader import load_pdf
 from rag.youtube_loader import load_youtube
 from rag.vector_store import create_vector_store
@@ -192,6 +202,7 @@ async def process_content(
         }
 
     except Exception as e:
+        log_exception("process")
         return {
             "error": str(e)
         }
@@ -233,7 +244,7 @@ async def chat(
         return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
-
+        log_exception("chat")
         return {
             "error": str(e)
         }
@@ -253,7 +264,7 @@ async def notes():
         return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
-
+        log_exception("notes")
         return {
             "error": str(e)
         }
@@ -273,7 +284,7 @@ async def summary():
         return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
-
+        log_exception("summary")
         return {
             "error": str(e)
         }
@@ -293,7 +304,7 @@ async def quiz():
         return StreamingResponse(generator, media_type="text/plain")
 
     except Exception as e:
-
+        log_exception("quiz")
         return {
             "error": str(e)
         }
@@ -354,6 +365,7 @@ async def delete_document(doc_id: str):
 
         return {"message": f"Document '{doc_to_delete['name']}' deleted successfully."}
     except Exception as e:
+        log_exception("delete_document")
         return {"error": str(e)}
 
 
@@ -384,4 +396,5 @@ async def delete_all():
 
         return {"message": "Knowledge Base fully cleared."}
     except Exception as e:
+        log_exception("delete_all")
         return {"error": str(e)}
