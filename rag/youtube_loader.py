@@ -32,9 +32,9 @@ def load_youtube(url, title=None):
 
     for i, item in enumerate(transcript):
         if current_word_count == 0:
-            start_time = int(item['start'])
+            start_time = int(item.start)
 
-        text = item['text']
+        text = item.text
         current_text.append(text)
         current_word_count += len(text.split())
 

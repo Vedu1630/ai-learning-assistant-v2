@@ -193,7 +193,6 @@ async def process_content(
                     for doc in load_pdf(p_path):
                         all_docs_text.append(doc.page_content)
             elif item["type"] == "youtube":
-                from rag.youtube_loader import load_youtube
                 for doc in load_youtube(item["url"], item["name"]):
                     all_docs_text.append(doc.page_content)
 
@@ -360,7 +359,6 @@ async def delete_document(doc_id: str):
                     for doc in load_pdf(p_path):
                         all_docs_text.append(doc.page_content)
             elif item["type"] == "youtube":
-                from rag.youtube_loader import load_youtube
                 for doc in load_youtube(item["url"], item["name"]):
                     all_docs_text.append(doc.page_content)
 
