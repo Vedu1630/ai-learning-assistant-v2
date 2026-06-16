@@ -51,6 +51,16 @@ app = FastAPI(
     title="AI Learning Assistant API"
 )
 
+@app.on_event("startup")
+async def startup_event():
+    try:
+        print("Warming up embeddings model...")
+        from rag.vector_store import get_embeddings
+        get_embeddings()
+        print("Embeddings model warmed up successfully!")
+    except Exception as e:
+        print(f"Error warming up embeddings: {e}")
+
 # =====================================
 # CORS
 # =====================================
