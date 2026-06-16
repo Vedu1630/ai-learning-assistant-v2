@@ -416,6 +416,7 @@ async function addToKB() {
     try {
         const file = document.getElementById("pdfFile").files[0];
         const youtubeUrl = document.getElementById("youtubeUrl").value.trim();
+        const youtubeProxy = document.getElementById("youtubeProxy") ? document.getElementById("youtubeProxy").value.trim() : "";
         
         if (!file && !youtubeUrl) {
             showStatus("❌ Please upload a PDF or enter a YouTube URL.");
@@ -430,8 +431,15 @@ async function addToKB() {
         }
         
         let url = `${API}/process`;
+        const params = [];
         if (youtubeUrl) {
-            url += `?youtube_url=${encodeURIComponent(youtubeUrl)}`;
+            params.push(`youtube_url=${encodeURIComponent(youtubeUrl)}`);
+        }
+        if (youtubeProxy) {
+            params.push(`proxy=${encodeURIComponent(youtubeProxy)}`);
+        }
+        if (params.length > 0) {
+            url += `?${params.join("&")}`;
         }
         
         const response = await fetch(url, {
@@ -449,6 +457,9 @@ async function addToKB() {
         document.getElementById("pdfFile").value = "";
         document.getElementById("fileInfo").style.display = "none";
         document.getElementById("youtubeUrl").value = "";
+        if (document.getElementById("youtubeProxy")) {
+            document.getElementById("youtubeProxy").value = "";
+        }
         
         showStatus(`✅ Successfully added content.`);
         await loadDocuments();

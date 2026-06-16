@@ -1,3 +1,5 @@
+import os
+import requests
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain_core.documents import Document
 
@@ -12,7 +14,7 @@ def extract_video_id(url):
     return url
 
 
-def load_youtube(url, title=None):
+def load_youtube(url, title=None, proxy=None):
 
     video_id = extract_video_id(url)
 
@@ -21,7 +23,19 @@ def load_youtube(url, title=None):
     if not title:
         title = f"YouTube Video ({video_id})"
 
-    api = YouTubeTranscriptApi()
+    if not proxy:
+        proxy = os.getenv("YOUTUBE_PROXY")
+
+    if proxy:
+        print(f"Using proxy for YouTube transcript: {proxy}")
+        session = requests.Session()
+        session.proxies = {"http": proxy, "https": proxy}
+        session.headers.update({
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+        })
+        api = YouTubeTranscriptApi(http_client=session)
+    else:
+        api = YouTubeTranscriptApi()
 
     transcript = api.fetch(video_id)
 

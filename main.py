@@ -106,6 +106,7 @@ def home():
 @app.post("/process")
 async def process_content(
     youtube_url: str = "",
+    proxy: str = "",
     file: UploadFile = None
 ):
 
@@ -153,7 +154,7 @@ async def process_content(
             if any(d["id"] == doc_id for d in registry):
                 return {"error": "This YouTube video is already initialized in the Knowledge Base."}
 
-            youtube_docs = load_youtube(youtube_url, doc_name)
+            youtube_docs = load_youtube(youtube_url, doc_name, proxy=proxy)
             documents.extend(youtube_docs)
             char_count = sum(len(doc.page_content) for doc in youtube_docs)
 
