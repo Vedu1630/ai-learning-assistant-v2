@@ -99,7 +99,23 @@ def home():
     }
 
 
+@app.get("/error-log")
+def get_error_log():
+    log_path = "data/error.log"
+    if os.getenv("RENDER") == "true":
+        # Make sure logs are tracked on Render
+        log_path = "/opt/render/project/src/data/error.log" if os.path.exists("/opt/render/project/src/data/error.log") else "data/error.log"
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r", encoding="utf-8") as f:
+                return {"log": f.read()}
+        except Exception as e:
+            return {"error": f"Failed to read log: {str(e)}"}
+    return {"message": f"No error log found. Path checked: {log_path}"}
+
+
 @app.get("/test-ytdlp")
+
 def test_ytdlp(youtube_url: str = "https://www.youtube.com/watch?v=7ARBJQn6QkM"):
     import yt_dlp
     results = {}
