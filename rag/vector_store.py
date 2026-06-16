@@ -40,7 +40,11 @@ def create_vector_store(documents):
     )
 
     if docs:
-        db.add_documents(docs)
+        # Batch addition to prevent memory spikes in low-RAM environments like Render
+        batch_size = 4
+        for i in range(0, len(docs), batch_size):
+            db.add_documents(docs[i:i + batch_size])
+
 
     with open(
         "data/current_collection.txt",
