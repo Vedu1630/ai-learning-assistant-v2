@@ -684,6 +684,53 @@ body {
   font-style: italic;
 }
 
+/* Table Styles - Premium ChatGPT-like */
+.bot-message table, .canvas-text table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.bot-message th, .canvas-text th,
+.bot-message td, .canvas-text td {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.bot-message th, .canvas-text th {
+  background-color: rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+  color: var(--text-main);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.dark-mode .bot-message th, .dark-mode .canvas-text th {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.bot-message tr:nth-child(even), .canvas-text tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+
+.dark-mode .bot-message tr:nth-child(even), .dark-mode .canvas-text tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.bot-message tr:hover, .canvas-text tr:hover {
+  background-color: rgba(0, 0, 0, 0.025);
+}
+
+.dark-mode .bot-message tr:hover, .dark-mode .canvas-text tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
 /* Input Area (Bottom of Chat) */
 .inputArea {
   display: flex;
