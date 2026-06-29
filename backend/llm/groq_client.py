@@ -42,7 +42,7 @@ Answer:
 """
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         messages=[
             {
                 "role": "user",
@@ -58,7 +58,7 @@ Answer:
 def ask_general_llm(question):
 
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
         messages=[
             {
                 "role": "user",
@@ -72,7 +72,7 @@ def ask_general_llm(question):
     return response.choices[0].message.content
 
 
-def ask_llm_stream(prompt, model="llama-3.1-8b-instant", temperature=0.3, max_tokens=1500):
+def ask_llm_stream(prompt, model="openai/gpt-oss-20b", temperature=0.3, max_tokens=1500):
 
     response = client.chat.completions.create(
         model=model,

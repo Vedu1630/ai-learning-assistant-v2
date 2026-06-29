@@ -12,14 +12,14 @@
 
 ### Turn any PDF or YouTube video into an interactive learning experience
 
-*Powered by RAG · LangGraph · Groq LLaMA 3.1*
+*Powered by RAG · LangGraph · Groq GPT OSS 20B*
 
 <br/>
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_Workflow-6C63FF?style=for-the-badge)](https://langchain-ai.github.io/langgraph/)
-[![Groq](https://img.shields.io/badge/Groq-LLaMA_3.1-F55036?style=for-the-badge)](https://groq.com)
+[![Groq](https://img.shields.io/badge/Groq-GPT_OSS_20B-F55036?style=for-the-badge)](https://groq.com)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Store-4A90D9?style=for-the-badge)](https://www.trychroma.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22C55E?style=for-the-badge)](LICENSE)
 
@@ -111,7 +111,7 @@ Upload a **PDF** or paste a **YouTube URL** and unlock a full agentic learning w
 │                              ▼                                      │
 │              ┌───────────────────────────────┐                      │
 │              │   🔴  Groq API                │                      │
-│              │   LLaMA 3.1 8B Instant        │                      │
+│              │   GPT OSS 20B                 │                      │
 │              └───────────────┬───────────────┘                      │
 │                              │                                      │
 │                              ▼                                      │
@@ -175,7 +175,7 @@ PDF / YouTube URL
     Semantic Retrieval from ChromaDB
                │
                ▼
-     Groq LLaMA 3.1 8B Instant
+     Groq GPT OSS 20B
                │
                ▼
        Response streamed to UI
@@ -186,7 +186,7 @@ PDF / YouTube URL
 1. User submits a message or clicks a feature button
 2. The **LangGraph Router** classifies intent: `notes` / `summary` / `quiz` / `general`
 3. The active agent performs **semantic retrieval** from ChromaDB
-4. Retrieved context + query are sent to **Groq's LLaMA 3.1 8B Instant**
+4. Retrieved context + query are sent to **Groq's GPT OSS 20B**
 5. The response is streamed back to the Streamlit UI
 
 ---
@@ -214,7 +214,7 @@ ai-learning-assistant/
 │   └── vector_store.py         ← ChromaDB create / load helpers
 │
 ├── llm/
-│   └── groq_client.py          ← Groq API wrapper (LLaMA 3.1 8B Instant)
+│   └── groq_client.py          ← Groq API wrapper (GPT OSS 20B)
 │
 ├── chroma_db/                  ← Persisted vector store (auto-generated)
 ├── data/                       ← Temp storage for processed docs
@@ -269,7 +269,7 @@ Open your browser at **`http://localhost:8501`** 🎉
 ├─────────────────────────────────────────────────────────┤
 │  UI                  Streamlit                          │
 │  Agentic Workflow    LangGraph                          │
-│  LLM                 Groq · LLaMA 3.1 8B Instant       │
+│  LLM                 Groq · GPT OSS 20B                │
 │  Embeddings          HuggingFace · all-MiniLM-L6-v2    │
 │  Vector Store        ChromaDB                           │
 │  PDF Parsing         LangChain · PyPDFLoader            │
